@@ -1,4 +1,4 @@
-# movie-man
+# Movie Man
 Discord bot for keeping track of the movie queue
 
 command to start Movie Man: nodemon --inspect MovieMan.js
