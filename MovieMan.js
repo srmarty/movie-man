@@ -47,17 +47,17 @@ client.on('ready', () => {
  client.on('message', msg => {
   if (msg.content === '!MMcommands' || msg.content === '!mmcommands' || msg.content === '!MMCommands' || msg.content === '!Mmcommands') {
     msg.reply('**!mmcommands** - lists current commands' +
-          '\n**!getdown** - get down to the funky sound **[coming soon!]**' +
-          '\n**!reviewscale** - lists the review scale for movie rating' +
-          '\n**!moviequeue** - lists the current movie queue **[coming soon!]**' +
-          '\n**!addtoqueue** - adds a movie to the queue' +
-          '\n**!removefromqueue** - removes a movie from the queue' +
-          '\n**!markaswatched** - marks a movie as watched, removing it from the movie queue, and adding it to the watch history' +
-          '\n**!watchhistory** - lists movies marked as watched' +
-          '\n**!moviereviews** - lists movies and their reviews, if they have any **[coming soon!]**' +
-          '\n**!addreview-[movie]** - add a review to the given movie. **(I reccommend listing the movies in the queue before running this command, as the names must match exactly) [coming one day!]**' +
-          '\n**!editreview-[movie]** - edit the review of the given movie. **(I reccommend listing the movies in the queue before running this command, as the names must match exactly) [coming one day!]**' +
-          '\n**!deletereview-[movie]** - delete the review of the given movie. **(I recommend listing the movies in teh queue before running this command, as the names must match exactly) [coming one day!]**');
+          '\n**getdown** - get down to the funky sound **[coming soon!]**' +
+          '\n**reviewscale** - lists the review scale for movie rating' +
+          '\n**moviequeue** - lists the current movie queue **[coming soon!]**' +
+          '\n**addtoqueue** - adds a movie to the queue' +
+          '\n**removefromqueue** - removes a movie from the queue' +
+          '\n**markaswatched** - marks a movie as watched, removing it from the movie queue, and adding it to the watch history' +
+          '\n**watchhistory** - lists movies marked as watched' +
+          '\n**moviereviews** - lists movies and their reviews, if they have any **[coming soon!]**' +
+          '\n**addreview-[movie]** - add a review to the given movie. **(I reccommend listing the movies in the queue before running this command, as the names must match exactly) [coming one day!]**' +
+          '\n**editreview-[movie]** - edit the review of the given movie. **(I reccommend listing the movies in the queue before running this command, as the names must match exactly) [coming one day!]**' +
+          '\n**deletereview-[movie]** - delete the review of the given movie. **(I recommend listing the movies in teh queue before running this command, as the names must match exactly) [coming one day!]**');
   }
 });
 
@@ -186,7 +186,6 @@ function fillMovieQueueArray () {
   var array = fs.readFileSync('movie_queue.txt').toString().split("\n");
   for(i in array) {
       movieQueue.push(array[i]);
-      console.log(movieQueue[i]);
   }
 }
 
@@ -196,7 +195,7 @@ function fillMovieQueueArray () {
 // and Movie Man will reply telling the user the news
 // if the movieName does not already exist in the movie queue, it will be appended to
 // movie_queue.txt and Movie Man will send a message
-function addMovieToQueue (movieName, msg) {
+function addMovieToQueue (movieName, message) {
   var alreadyInQueue = false;
   // opening movie_queue.txt to READ the movie queue to make sure this movie is not a duplicate
   var fs = require("fs");
@@ -204,7 +203,7 @@ function addMovieToQueue (movieName, msg) {
     let data = fs.readFileSync('movie_queue.txt')
     if (data.toString().toUpperCase().includes(movieName.toUpperCase())) {
       alreadyInQueue = true;
-      msg.reply('**' + movieName + '** already exists in the Movie Queue. If this is an error, talk to Sarah');
+      message.reply('**' + movieName + '** already exists in the Movie Queue. If this is an error, talk to Sarah');
     }
   } catch (err) {
     return console.error(err);
@@ -217,8 +216,9 @@ function addMovieToQueue (movieName, msg) {
         return console.error(err);
       }
     })
-    msg.reply('**' + movieName + '** has been added to the Movie Queue!');
+    message.reply('**' + movieName + '** has been added to the Movie Queue!');
   }
+  return;
 }
 
 // removes a movie from movie_queue.txt
@@ -227,6 +227,7 @@ function addMovieToQueue (movieName, msg) {
 // TODO: implement lol
 function removeMovieFromQueue (movieName, msg) {
   //TODO: implement:
+  return;
 }
 
 
