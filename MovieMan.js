@@ -1,25 +1,13 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+require('events').EventEmitter.defaultMaxListeners = 100;
 
 
 // fields
 
 // watch history array prefilled with movies seen at the time of !watchhistory implementation (10/25/2020)
 // TODO: create file for this so bot can automatically update it
-var watchHistoryList = ['The B in Apartment 23',
-                    'Attack on Titan',
-                    'Twilight',
-                    'New Moon',
-                    'Breaking Dawn Part 1',
-                    'Breaking Dawn Part 2',
-                    'Uncut Gems',
-                    'Gone Girl',
-                    'Moon',
-                    'American Murder: The Family Next Door',
-                    'Knives Out',
-                    'Borat',
-                    'Warm Bodies',
-                    'Borat 2'];
+var watchHistory = [];
 
 // movie queue array is filled with the movie_queue.txt data
 // queue methods for JavaScript:
@@ -49,9 +37,9 @@ client.on('ready', () => {
     msg.reply('**!mmcommands** - lists current commands' +
           '\n**getdown** - get down to the funky sound **[coming soon!]**' +
           '\n**reviewscale** - lists the review scale for movie rating' +
-          '\n**moviequeue** - lists the current movie queue **[coming soon!]**' +
-          '\n**addtoqueue** - adds a movie to the queue' +
-          '\n**removefromqueue** - removes a movie from the queue' +
+          '\n**movieq** - lists the current movie queue **[coming soon!]**' +
+          '\n**addtoq** - adds a movie to the queue' +
+          '\n**removefromq** - removes a movie from the queue' +
           '\n**markaswatched** - marks a movie as watched, removing it from the movie queue, and adding it to the watch history' +
           '\n**watchhistory** - lists movies marked as watched' +
           '\n**moviereviews** - lists movies and their reviews, if they have any **[coming soon!]**' +
@@ -96,7 +84,7 @@ client.on('message', msg => {
 // lists the current movie queue
 // TODO: add message variations
 client.on('message', msg => {
-  if (msg.content === '!moviequeue') {
+  if (msg.content === '!moviequeue' || msg.content === '!movieq') {
     var output = '\n';
     for (let movie in movieQueue) {
       output += movieQueue[movie] + '\n';
@@ -104,6 +92,9 @@ client.on('message', msg => {
     msg.reply('**Current Movie Queue**: \n' + output).catch(console.error);
   }
 });
+
+
+
 
 // Movie Man will tell Tanner to shut up any time he sends a message
 // client.on('message', msg => {
@@ -113,9 +104,12 @@ client.on('message', msg => {
 // });
 
 client.on('message', msg => {
-  if (msg.content.includes('!addtoqueue')) {
-      let movieName = msg.content.substring(msg.content.indexOf('-') + 1, msg.content.length);
-
+  if (msg.content.includes('!addtoqueue') || msg.content.includes('!addtoq')) {
+      if (msg.content.includes('-')) {
+        var movieName = msg.content.substring(msg.content.indexOf('-') + 1, msg.content.length);
+    } else {
+        var movieName = msg.content.substring(msg.content.indexOf(' ') + 1, msg.content.length);
+    }
       // add the movie to movie_queue.txt
       addMovieToQueue(movieName, msg);
       // recreate the movie queue
@@ -125,7 +119,7 @@ client.on('message', msg => {
 });
 
 client.on('message', msg => {
-  if (msg.content.includes('!removefromqueue')) {
+  if (msg.content === '!removefromqueue' || msg.content === '!removefromq') {
     let movieName = msg.content.substring(msg.content.indexOf('-') + 1, msg.content.length);
     // remove the movie from movie_queue.txt
     // TODO: implement this function
@@ -180,14 +174,28 @@ client.on('message', msg => {
 
 
 // FUNCTIONS
+
+// fills the moviequeue array with the movies kept in movie_queue.txt (the movie queue database)
 function fillMovieQueueArray () {
-  movieQueue = [];
+  movieQueue = [];  // first, clear the array
   var fs = require('fs');
   var array = fs.readFileSync('movie_queue.txt').toString().split("\n");
   for(i in array) {
       movieQueue.push(array[i]);
   }
 }
+
+// fills the watchhistory array with the movies kept in watch_history.txt (the watch history database)
+function fillWatchHistoryArray () {
+    watchHistory = [];  // first, clear the array
+    var fs = require('fs');
+    var array = fs.readFileSync('watch_history.txt').toString().split('\n'); // read the file with delimiter '\n'
+    for (i in array) {
+        watchHistory.push(array[i]); // push each movie found to the top of watchHistory
+    }
+}
+
+
 
 
 // adds movieName to the movie queue, and sends a message
@@ -219,6 +227,18 @@ function addMovieToQueue (movieName, message) {
     message.reply('**' + movieName + '** has been added to the Movie Queue!');
   }
   return;
+}
+
+// adds the given movieName to watch_history.txt, to populate the watchHistory array
+function addMovieToWatchHistory (movieName, message) {
+    var fs = require("fs");
+    fs.appendFileSync('watch_history.txt', movieName + '\n', function(err) {
+        if (err) {
+            return console.error(err);
+        }
+    })
+    message.reply('**' + movieName + '** has been added to Watch History!');
+    return;
 }
 
 // removes a movie from movie_queue.txt
