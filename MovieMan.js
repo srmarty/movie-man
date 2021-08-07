@@ -1,6 +1,12 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const { Client, Intents, Discord } = require('discord.js');
 require('events').EventEmitter.defaultMaxListeners = 100;
+const PropertiesReader = require('properties-reader');
+
+
+const myIntents = new Intents();
+myIntents.add(Intents.FLAGS.GUILD_MESSAGES); 
+const client = new Client({ intents: myIntents });
+
 
 
 // fields
@@ -250,5 +256,8 @@ function removeMovieFromQueue (movieName, msg) {
   return;
 }
 
+console.log(PropertiesReader(`./bot.properties`).get('bot.token'));
 
-client.login('NzY2NDg4MTQxMTI4NjYzMDQx.X4kFtQ.TpoShd1H6jxwGO_ffITXXTwqzzk');
+
+client.login(PropertiesReader(`./bot.properties`).get('bot.token'));
+
