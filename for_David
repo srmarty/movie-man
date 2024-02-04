@@ -1,0 +1,69 @@
+Sub ExportCommentsToExcel()
+
+    ' Declare variables
+    Dim xlApp As Object
+    Dim xlWB As Object
+    Dim xlWS As Object
+    Dim wDoc As Document
+    Dim oComment As Comment
+    Dim i As Long, j As Long, nRow As Long
+
+    ' Set references
+    Set xlApp = CreateObject("Excel.Application")
+    Set xlWB = xlApp.Workbooks.Add
+    Set xlWS = xlWB.Worksheets(1)
+
+    ' Set Word document object
+    Set wDoc = ActiveDocument
+
+    ' Check for comments
+    If wDoc.Comments.Count = 0 Then
+        MsgBox "No comments found in this document.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Write headers in Excel
+    nRow = 1
+    xlWS.Cells(nRow, 1).Value = "Comment Number"
+    xlWS.Cells(nRow, 2).Value = "Reviewer"
+    xlWS.Cells(nRow, 3).Value = "Date"
+    xlWS.Cells(nRow, 4).Value = "Comment Text"
+    xlWS.Cells(nRow, 5).Value = "Section"
+
+    ' Loop through each comment
+    nRow = 2
+    For i = 1 To wDoc.Comments.Count
+        Set oComment = wDoc.Comments(i)
+
+        ' Get comment information
+        xlWS.Cells(nRow, 1).Value = i
+        xlWS.Cells(nRow, 2).Value = oComment.Author
+        xlWS.Cells(nRow, 3).Value = oComment.Date
+
+        ' Extract comment text
+        xlWS.Cells(nRow, 4).Value = oComment.Range.Text
+
+        ' Find section containing comment
+        j = oComment.Range.Start
+        While j > 0 And wDoc.Sections(j).Range.End >= oComment.Range.Start
+            j = j - 1
+        Wend
+
+        ' Get section number
+        xlWS.Cells(nRow, 5).Value = wDoc.Sections(j + 1).Number
+
+        nRow = nRow + 1
+    Next i
+
+    ' Autofit columns
+    xlWS.UsedRange.Columns.AutoFit
+
+    ' Make Excel visible
+    xlApp.Visible = True
+
+    ' Clean up
+    Set xlWS = Nothing
+    Set xlWB = Nothing
+    Set xlApp = Nothing
+
+End Sub
